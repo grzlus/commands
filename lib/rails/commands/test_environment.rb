@@ -5,9 +5,9 @@ module Rails
     module TestEnvironment
       extend self
     
-      def fork
+      def fork( detected_folder )
         Environment.fork do
-          setup_for_test
+          setup_for_test( detected_folder )
           yield
         end
         
@@ -16,9 +16,9 @@ module Rails
 
 
       private
-        def setup_for_test
+        def setup_for_test( detected_folder )
           reload_classes        
-          add_test_dir_to_load_path
+          add_test_dir_to_load_path( detected_folder )
         end
 
         def reload_classes
@@ -37,8 +37,8 @@ module Rails
           end
         end
       
-        def add_test_dir_to_load_path
-          test_path = Rails.root.join("test")
+        def add_test_dir_to_load_path( detected_folder )
+          test_path = Rails.root.join( detected_folder )
           $:.unshift(test_path) unless $:.first == test_path
         end
     end

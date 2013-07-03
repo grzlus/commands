@@ -8,11 +8,11 @@ module Rails
         when NilClass
           print_test_usage
         when "all"
-          run "test/**/**/*_test.rb"
+          run "#{ detect_folder }/**/**/*_#{ detect_folder }.rb"
         when /^[^\/]+$/ # models
-          run "test/#{what}/**/*_test.rb"
+          run "#{ detect_folder }/#{what}/**/*_#{ detect_folder }.rb"
         when /[\/]+/ # models/person
-          run "test/#{what}_test.rb"
+          run "#{ detect_folder }/#{what}_#{ detect_folder }.rb"
         end
 
         "Completed"
@@ -21,7 +21,7 @@ module Rails
 
       private
         def run(*test_patterns)
-          TestEnvironment.fork do
+          TestEnvironment.fork( detect_folder ) do
             test_patterns.each do |test_pattern|
               Dir[test_pattern].each do |path|
                 require File.expand_path(path)
@@ -51,8 +51,12 @@ module Rails
         If you supply WHAT with either models, controllers, helpers, integration, or performance,
         those whole sets will be run.
 
-        If you supply WHAT with models/person, just test/models/person_test.rb will be run.
+        If you supply WHAT with models/perso], just test/models/person_test.rb will be run.
     EOT
+        end
+
+        def detect_folder
+          @detected_folder ||= ['spec', 'test'].detect { |folder| File.directory?( Rails.root.join( folder ) ) }
         end
     end
   end
